@@ -77,19 +77,17 @@ export default function Clipboard({
 
           {/* Photo placeholder */}
           <div
-            className="w-16 h-20 mb-3 flex items-center justify-center text-xs text-gray-600"
+            className="w-16 h-20 mb-3 overflow-hidden"
             style={{
               background: "#ddd",
               border: "1px solid #bbb",
             }}
           >
-            <svg
-              className="w-8 h-8 text-gray-600"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
+            <img
+              src="https://xsgames.co/randomusers/avatar.php?g=male"
+              alt="Suspect photo"
+              className="w-full h-full object-cover"
+            />
           </div>
 
           {/* Info */}
