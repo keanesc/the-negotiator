@@ -94,7 +94,7 @@ export default function CCTVMonitor({
       >
         {/* Power LED */}
         <div
-          className="absolute top-[-8px] right-4 w-2 h-2 rounded-full z-10"
+          className="absolute top-2 right-4 w-2 h-2 rounded-full z-10"
           style={{
             background: gameStatus === "active" ? "#00ff41" : gameStatus === "calibrating" ? "#ffaa00" : "#333",
             boxShadow: gameStatus === "active" ? "0 0 6px #00ff41" : "none",
@@ -333,7 +333,7 @@ function drawTimestamp(ctx: CanvasRenderingContext2D, w: number, h: number, t: n
   ctx.textAlign = "left";
   ctx.fillText(`CAM-03  ${dateStr}  ${timeStr}`, 10, h - 10);
   ctx.textAlign = "right";
-  ctx.fillText("REC ●", w - 10, h - 10);
+  ctx.fillText("REC ●", w - 19, h - 10);
 
   // Blinking REC indicator
   if (Math.floor(t * 2) % 2 === 0) {

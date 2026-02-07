@@ -23,7 +23,7 @@ export function ConversationLog({ conversation }: ConversationLogProps) {
 
   return (
     <div
-      className="w-80 h-[600px] flex flex-col"
+      className="w-80 h-125 flex flex-col"
       style={{
         background: "linear-gradient(180deg, #1a1a1a 0%, #111 100%)",
         border: "2px solid #2a2a2a",

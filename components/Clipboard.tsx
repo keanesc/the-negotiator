@@ -71,20 +71,20 @@ export default function Clipboard({
           </div>
 
           {/* Header */}
-          <div className="text-xs text-gray-500 mb-3 tracking-widest">
+          <div className="text-xs text-gray-700 mb-3 tracking-widest">
             SUSPECT PROFILE
           </div>
 
           {/* Photo placeholder */}
           <div
-            className="w-16 h-20 mb-3 flex items-center justify-center text-xs text-gray-400"
+            className="w-16 h-20 mb-3 flex items-center justify-center text-xs text-gray-600"
             style={{
               background: "#ddd",
               border: "1px solid #bbb",
             }}
           >
             <svg
-              className="w-8 h-8 text-gray-400"
+              className="w-8 h-8 text-gray-600"
               fill="currentColor"
               viewBox="0 0 24 24"
             >
@@ -100,7 +100,7 @@ export default function Clipboard({
 
             <div className="border-t border-gray-300 my-2" />
 
-            <div className="text-xs text-gray-500 tracking-widest mb-1">
+            <div className="text-xs text-gray-700 tracking-widest mb-1">
               DEMANDS
             </div>
             <div className="text-xs text-gray-800 pl-1">
@@ -110,7 +110,7 @@ export default function Clipboard({
 
             <div className="border-t border-gray-300 my-2" />
 
-            <div className="text-xs text-gray-500 tracking-widest mb-1">
+            <div className="text-xs text-gray-700 tracking-widest mb-1">
               HOSTAGES
             </div>
             <div className="flex gap-1.5 pl-1">
@@ -133,7 +133,7 @@ export default function Clipboard({
                   >
                     {h.icon}
                   </div>
-                  <span className="text-[8px] text-gray-500 mt-0.5">
+                  <span className="text-[8px] text-gray-700 mt-0.5">
                     {h.label}
                   </span>
                 </div>
@@ -143,7 +143,7 @@ export default function Clipboard({
             <div className="border-t border-gray-300 my-2" />
 
             {/* SIGINT readings — diegetic version of state bars */}
-            <div className="text-xs text-gray-500 tracking-widest mb-1">
+            <div className="text-xs text-gray-700 tracking-widest mb-1">
               SIGINT ANALYSIS
             </div>
             <StateBar label="AGITATION" value={tension} color={getTensionColor(tension)} />
@@ -159,7 +159,7 @@ export default function Clipboard({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex">
-      <span className="text-gray-500 w-16 shrink-0">{label}:</span>
+      <span className="text-gray-700 w-16 shrink-0">{label}:</span>
       <span className="font-semibold">{value}</span>
     </div>
   );
@@ -176,7 +176,7 @@ function StateBar({
 }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[9px] text-gray-500 w-16 shrink-0">{label}</span>
+      <span className="text-[9px] text-gray-700 w-16 shrink-0">{label}</span>
       <div className="flex-1 h-1.5 bg-gray-300 rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700"
@@ -186,7 +186,7 @@ function StateBar({
           }}
         />
       </div>
-      <span className="text-[9px] text-gray-600 w-5 text-right">{value}</span>
+      <span className="text-[9px] text-gray-700 w-5 text-right">{value}</span>
     </div>
   );
 }

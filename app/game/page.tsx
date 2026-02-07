@@ -357,7 +357,7 @@ export default function GamePage() {
           </div>
 
           {/* Center: CCTV Monitor */}
-          <div className="w-full max-w-[640px]">
+          <div className="w-full max-w-160">
             <CCTVMonitor
               tension={suspectState.tension}
               paranoia={suspectState.paranoia}
