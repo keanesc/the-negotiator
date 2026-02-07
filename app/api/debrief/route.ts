@@ -58,7 +58,7 @@ Average Stammering: ${avg(biometricLog, "stammering")}
 Average Hesitation: ${avg(biometricLog, "hesitating")}`;
 
     const result = streamText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-3-flash-preview"),
       system: DEBRIEF_PROMPT,
       messages: [
         {
@@ -66,7 +66,6 @@ Average Hesitation: ${avg(biometricLog, "hesitating")}`;
           content: debriefContext,
         },
       ],
-      temperature: 0.8,
       maxOutputTokens: 1500,
     });
 

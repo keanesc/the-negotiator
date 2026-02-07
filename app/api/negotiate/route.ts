@@ -62,10 +62,9 @@ export async function POST(request: Request) {
     });
 
     const result = streamText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-3-flash-preview"),
       system: JAX_SYSTEM_PROMPT,
       messages,
-      temperature: 0.9,
       maxOutputTokens: 500,
     });
 
