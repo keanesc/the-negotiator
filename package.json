@@ -12,6 +12,8 @@
     "@ai-sdk/google": "^3.0.21",
     "ai": "^6.0.73",
     "next": "16.1.6",
+    "phaser": "^3.90.0",
+    "phaser3-rex-plugins": "^1.80.18",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "zustand": "^5.0.11"
@@ -21,6 +23,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "canvas": "^3.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
@@ -31,6 +34,7 @@
     "unrs-resolver"
   ],
   "trustedDependencies": [
+    "canvas",
     "sharp",
     "unrs-resolver"
   ]

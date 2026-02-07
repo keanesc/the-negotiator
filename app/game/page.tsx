@@ -10,8 +10,11 @@ import type { CalibrationState } from "@/lib/audio/calibration";
 import { encodeWAV } from "@/lib/audio/wav-encoder";
 import type { BiometricSignals } from "@/lib/types";
 
+import dynamic from "next/dynamic";
 import CommandCenter from "@/components/CommandCenter";
-import CCTVMonitor from "@/components/CCTVMonitor";
+const CCTVMonitor = dynamic(() => import("@/components/CCTVMonitor"), {
+  ssr: false,
+});
 import WaveformOverlay from "@/components/WaveformOverlay";
 import Clipboard from "@/components/Clipboard";
 import MicButton from "@/components/MicButton";
