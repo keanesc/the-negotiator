@@ -20,11 +20,13 @@ import path from "path";
 
 const FRAME_W = 32;
 const FRAME_H = 48;
-const DARK = "#111111";
-const DARKER = "#0a0a0a";
-const DARKEST = "#060606";
-const GUN_COLOR = "#151515";
-const OUTLINE = "#1a1a1a";
+const DARK = "#666666"; // Much brighter base gray
+const DARKER = "#555555";
+const DARKEST = "#444444";
+const GUN_COLOR = "#a0a0a0"; // Bright gray for grip
+const GUN_METAL = "#d0d0d0"; // Very bright steel for barrel
+const ROPE_COLOR = "#806258"; // User specified rope color
+const OUTLINE = "#888888";
 
 const outDir = path.join(process.cwd(), "public", "sprites");
 fs.mkdirSync(outDir, { recursive: true });
@@ -77,41 +79,53 @@ function drawStandingBody(ctx, cx, footY, opts = {}) {
   ctx.fillRect(-3, 0, 3, 10);
   ctx.restore();
 
-  // Right arm + optional gun
+  // Right arm + shotgun
   ctx.save();
   ctx.translate(cx + 4, torsoTop + 2);
   ctx.rotate(armRAngle);
   ctx.fillRect(0, 0, 3, 10);
   if (gunExtended) {
+    // Shotgun design
     ctx.fillStyle = GUN_COLOR;
-    ctx.fillRect(1, 9, 2, 7);
-    ctx.fillRect(-1, 14, 6, 3); // barrel
+    ctx.fillRect(1, 9, 3, 6); // grip/stock
+    ctx.fillStyle = GUN_METAL;
+    ctx.fillRect(-1, 12, 10, 3); // long barrel
+    ctx.fillRect(-1, 11, 3, 2); // pump/foregrip
+    ctx.fillRect(8, 12, 2, 2); // barrel tip accent
   }
   ctx.restore();
 }
 
-// Helper: draw kneeling person
-function drawKneelingBody(ctx, cx, footY, opts = {}) {
-  const { headOffX = 0, headOffY = 0, color = DARK } = opts;
-  const headR = 3;
-  const kneelY = footY - 8;
+// Helper: draw face-down tied-up person
+function drawFaceDownBody(ctx, cx, footY, opts = {}) {
+  const { color = DARK } = opts;
 
+  // Body lying face-down — horizontal
+  const bodyY = footY - 6;
+
+  // Torso (flat, horizontal)
   ctx.fillStyle = color;
+  ctx.fillRect(cx - 10, bodyY - 2, 20, 6);
 
-  // Head
+  // Head (face down, slightly larger so it's clearly visible)
+  ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(cx + headOffX, kneelY - 10 + headOffY, headR, 0, Math.PI * 2);
+  ctx.arc(cx - 13, bodyY + 1, 4, 0, Math.PI * 2);
   ctx.fill();
 
-  // Torso (hunched)
-  ctx.fillRect(cx - 3, kneelY - 7, 6, 10);
+  // Arms behind back
+  ctx.fillStyle = color;
+  ctx.fillRect(cx - 2, bodyY - 4, 6, 3);
 
-  // Arms behind head
-  ctx.fillRect(cx - 5, kneelY - 12, 2, 6);
-  ctx.fillRect(cx + 3, kneelY - 12, 2, 6);
+  // Rope/binding — bright brown so it stands out clearly
+  ctx.fillStyle = ROPE_COLOR;
+  ctx.fillRect(cx - 2, bodyY - 5, 10, 3); // Wider, more visible rope
+  ctx.fillRect(cx, bodyY - 3, 6, 2); // Second section
 
-  // Folded legs
-  ctx.fillRect(cx - 4, kneelY + 3, 8, 4);
+  // Legs (slightly bent)
+  ctx.fillStyle = color;
+  ctx.fillRect(cx + 8, bodyY - 1, 8, 3);
+  ctx.fillRect(cx + 14, bodyY + 1, 4, 3);
 }
 
 // ---- Suspect Idle (4 frames: subtle breathing) ----
@@ -122,11 +136,9 @@ function drawKneelingBody(ctx, cx, footY, opts = {}) {
 
   for (let i = 0; i < frames; i++) {
     const ox = i * FRAME_W;
-    const breathe = Math.sin((i / frames) * Math.PI * 2) * 0.5;
     ctx.save();
     ctx.translate(ox, 0);
     drawStandingBody(ctx, FRAME_W / 2, FRAME_H - 2, {
-      bodyShiftY: breathe,
       armRAngle: 0.6,
       gunExtended: true,
     });
@@ -152,7 +164,6 @@ function drawKneelingBody(ctx, cx, footY, opts = {}) {
       armRAngle: 0.4 + Math.sin(phase) * 0.2,
       armLAngle: 0.3 + Math.cos(phase) * 0.2,
       gunExtended: true,
-      bodyShiftY: Math.abs(Math.sin(phase)) * -1,
     });
     ctx.restore();
   }
@@ -182,22 +193,12 @@ function drawKneelingBody(ctx, cx, footY, opts = {}) {
   saveSheet(canvas, "suspect-crisis.png");
 }
 
-// ---- Hostage Kneel (2 frames: subtle tremble) ----
+// ---- Hostage Face-Down (1 frame: static, tied up on floor) ----
 {
-  const frames = 2;
-  const canvas = createCanvas(FRAME_W * frames, FRAME_H);
+  const canvas = createCanvas(FRAME_W, FRAME_H);
   const ctx = canvas.getContext("2d");
 
-  for (let i = 0; i < frames; i++) {
-    const ox = i * FRAME_W;
-    ctx.save();
-    ctx.translate(ox, 0);
-    drawKneelingBody(ctx, FRAME_W / 2, FRAME_H - 2, {
-      headOffX: i === 1 ? 1 : -1,
-      headOffY: i === 1 ? -0.5 : 0.5,
-    });
-    ctx.restore();
-  }
+  drawFaceDownBody(ctx, FRAME_W / 2, FRAME_H - 2);
   saveSheet(canvas, "hostage-kneel.png");
 }
 

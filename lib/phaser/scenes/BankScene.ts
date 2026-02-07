@@ -80,10 +80,7 @@ export class BankScene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48,
     });
-    this.load.spritesheet("hostage-kneel", "/sprites/hostage-kneel.png", {
-      frameWidth: 32,
-      frameHeight: 48,
-    });
+    this.load.image("hostage-kneel", "/sprites/hostage-kneel.png");
     this.load.spritesheet("hostage-dead", "/sprites/hostage-dead.png", {
       frameWidth: 32,
       frameHeight: 48,
@@ -141,25 +138,24 @@ export class BankScene extends Phaser.Scene {
         .sprite(pos.x, pos.y + 10, "hostage-dead", 0)
         .setScale(2)
         .setVisible(false)
-        .setTint(0x444444);
+        .setTint(0x888888);
       this.deadHostageSprites.push(dead);
 
-      // Living sprite
+      // Living sprite — face-down, static (no animation)
       const hostage = this.add
-        .sprite(pos.x, pos.y, "hostage-kneel", 0)
+        .image(pos.x, pos.y, "hostage-kneel")
         .setScale(2)
-        .setTint(0x555555);
-      hostage.play("hostage-tremble");
-      this.hostageSprites.push(hostage);
+        .setTint(0xaaaaaa);
+      this.hostageSprites.push(hostage as unknown as Phaser.GameObjects.Sprite);
     }
 
     // ---- Suspect (Jax) ----
     this.suspectBaseX = 370;
-    this.suspectBaseY = 250;
+    this.suspectBaseY = 290;
     this.suspect = this.add
       .sprite(this.suspectBaseX, this.suspectBaseY, "suspect-idle", 0)
       .setScale(2.5)
-      .setTint(0x555555);
+      .setTint(0xaaaaaa);
     this.suspect.play("suspect-breathe");
 
     // Track all sprites for jitter
@@ -173,11 +169,11 @@ export class BankScene extends Phaser.Scene {
 
     // ---- Jitter timer (1-2px vertical shifts) ----
     this.jitterTimer = this.time.addEvent({
-      delay: 150,
+      delay: Phaser.Math.Between(60000, 120000), // 1-2 minutes
       loop: true,
       callback: () => {
         for (const sprite of this.spriteTargets) {
-          if (sprite.visible && Math.random() < 0.15) {
+          if (sprite.visible && Math.random() < 0.3) {
             const shift = Phaser.Math.Between(-2, 2);
             sprite.y += shift;
             // Return to base after a short delay
@@ -210,8 +206,12 @@ export class BankScene extends Phaser.Scene {
     // Update HUD clock
     this.updateHUD();
 
-    // Paranoia: twitchy head on suspect
-    if (this.state.paranoia > 50 && this.suspect.visible) {
+    // Paranoia: very occasional twitchy head on suspect (rare)
+    if (
+      this.state.paranoia > 50 &&
+      this.suspect.visible &&
+      Math.random() < 0.001
+    ) {
       const twitchAmount = (this.state.paranoia - 50) / 25;
       this.suspect.x = this.suspect.x + (Math.random() - 0.5) * twitchAmount;
     }
@@ -445,7 +445,7 @@ export class BankScene extends Phaser.Scene {
   // DIGITAL GLITCH ARTIFACTS
   // ==============================================================
   private scheduleGlitch() {
-    const delay = Phaser.Math.Between(3000, 8000);
+    const delay = Phaser.Math.Between(60000, 120000); // 1-2 minutes
     this.glitchTimer = this.time.delayedCall(delay, () => {
       // Brief vertical frame shift
       const shift = Phaser.Math.Between(-3, 3);
@@ -570,17 +570,7 @@ export class BankScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Hostage kneeling tremble — 2 frames at 5 FPS
-    this.anims.create({
-      key: "hostage-tremble",
-      frames: this.anims.generateFrameNumbers("hostage-kneel", {
-        start: 0,
-        end: 1,
-      }),
-      frameRate: 5,
-      repeat: -1,
-      yoyo: true,
-    });
+    // hostage-kneel is now a static image — no animation needed
   }
 
   // ==============================================================
