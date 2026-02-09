@@ -33,6 +33,7 @@ export default function GamePage() {
     stammering: 0,
     hesitating: 0,
   });
+  const backgroundMusicRef = useRef<HTMLAudioElement>(null);
 
   // ---- Local state ----
   const [calibrationState, setCalibrationState] = useState<CalibrationState>({
@@ -299,9 +300,26 @@ export default function GamePage() {
     setIsProcessing,
   ]);
 
+  // ---- Background music control ----
+  useEffect(() => {
+    const music = backgroundMusicRef.current;
+    if (!music) return;
+
+    music.volume = 0.2; // keep volume low for calibration
+    
+    // Only play during active gameplay
+    if (status === "active") {
+      music.play().catch((e) => console.warn("Failed to play background music:", e));
+    } else {
+      music.pause();
+      music.currentTime = 0; // Reset to beginning
+    }
+  }, [status]);
+
   // ---- Cleanup ----
   useEffect(() => {
     return () => {
+      backgroundMusicRef.current?.pause();
       audioEngineRef.current?.destroy();
     };
   }, []);
@@ -336,6 +354,14 @@ export default function GamePage() {
 
   return (
     <CommandCenter tension={suspectState.tension}>
+      {/* Background music — plays only during active gameplay */}
+      <audio
+        ref={backgroundMusicRef}
+        src="/audio/main_bg.mp3"
+        loop
+        preload="auto"
+      />
+
       {/* Calibration overlay */}
       {status === "calibrating" && (
         <CalibrationFlow
