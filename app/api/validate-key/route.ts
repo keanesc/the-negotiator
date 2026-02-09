@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       });
 
       await generateText({
-        model: google("gemini-2.0-flash-exp"),
+        model: google("gemini-3-flash-preview"),
         prompt: "Say 'ok'",
         maxOutputTokens: 5,
       });

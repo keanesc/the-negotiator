@@ -76,8 +76,8 @@ export async function POST(request: Request) {
 
     const result = streamText({
       model: clientApiKey
-        ? createGoogleGenerativeAI({ apiKey })("gemini-2.0-flash-exp")
-        : google("gemini-2.0-flash-exp"),
+        ? createGoogleGenerativeAI({ apiKey })("gemini-3-flash-preview")
+        : google("gemini-3-flash-preview"),
       system: JAX_SYSTEM_PROMPT,
       messages,
       maxOutputTokens: 500,

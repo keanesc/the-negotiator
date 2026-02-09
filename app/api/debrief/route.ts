@@ -72,8 +72,8 @@ Average Hesitation: ${avg(biometricLog, "hesitating")}`;
 
     const result = streamText({
       model: clientApiKey
-        ? createGoogleGenerativeAI({ apiKey })("gemini-2.0-flash-exp")
-        : google("gemini-2.0-flash-exp"),
+        ? createGoogleGenerativeAI({ apiKey })("gemini-3-flash-preview")
+        : google("gemini-3-flash-preview"),
       system: DEBRIEF_PROMPT,
       messages: [
         {
