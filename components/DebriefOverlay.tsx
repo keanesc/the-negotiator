@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { getApiKey } from "@/lib/api-key";
 
 // ============================================================
 // Debrief Overlay — post-game performance review
@@ -33,9 +34,15 @@ export default function DebriefOverlay({
         const { useGameStore } = await import("@/lib/game/state");
         const state = useGameStore.getState();
 
+        const apiKey = getApiKey();
+        const headers: HeadersInit = { "Content-Type": "application/json" };
+        if (apiKey) {
+          headers["x-api-key"] = apiKey;
+        }
+
         const response = await fetch("/api/debrief", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({
             conversation: state.conversation,
             biometricLog: state.biometricLog,
@@ -48,7 +55,10 @@ export default function DebriefOverlay({
           }),
         });
 
-        if (!response.ok) throw new Error("Debrief failed");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: "Failed to generate debrief" }));
+          throw new Error(errorData.error || "Debrief failed");
+        }
 
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();

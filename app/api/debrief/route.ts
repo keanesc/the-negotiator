@@ -3,11 +3,24 @@
 // ============================================================
 
 import { streamText } from "ai";
-import { google } from "@ai-sdk/google";
+import { google, createGoogleGenerativeAI } from "@ai-sdk/google";
 import { DEBRIEF_PROMPT } from "@/lib/game/prompts";
 
 export async function POST(request: Request) {
   try {
+    // Get API key from header or fall back to server env var
+    const clientApiKey = request.headers.get("x-api-key");
+    const apiKey = clientApiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({
+          error: "No API key configured. Please add your Gemini API key.",
+        }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     const body = await request.json();
     const { conversation, biometricLog, finalState } = body;
 
@@ -58,7 +71,9 @@ Average Stammering: ${avg(biometricLog, "stammering")}
 Average Hesitation: ${avg(biometricLog, "hesitating")}`;
 
     const result = streamText({
-      model: google("gemini-3-flash-preview"),
+      model: clientApiKey
+        ? createGoogleGenerativeAI({ apiKey })("gemini-2.0-flash-exp")
+        : google("gemini-2.0-flash-exp"),
       system: DEBRIEF_PROMPT,
       messages: [
         {
@@ -70,8 +85,32 @@ Average Hesitation: ${avg(biometricLog, "hesitating")}`;
     });
 
     return result.toTextStreamResponse();
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("[Debrief API Error]", error);
+
+    // Check for specific API errors
+    if (error && typeof error === "object" && "message" in error) {
+      const message = String(error.message).toLowerCase();
+
+      if (message.includes("api key") || message.includes("auth")) {
+        return new Response(
+          JSON.stringify({
+            error: "Invalid API key. Please check your Gemini API key.",
+          }),
+          { status: 401, headers: { "Content-Type": "application/json" } },
+        );
+      }
+
+      if (message.includes("quota") || message.includes("rate limit")) {
+        return new Response(
+          JSON.stringify({
+            error: "API quota exceeded. Please wait and try again.",
+          }),
+          { status: 429, headers: { "Content-Type": "application/json" } },
+        );
+      }
+    }
+
     return new Response(
       JSON.stringify({ error: "Failed to generate debrief" }),
       { status: 500, headers: { "Content-Type": "application/json" } },

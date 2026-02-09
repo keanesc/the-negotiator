@@ -1,17 +1,52 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import ApiKeySetup from "@/components/ApiKeySetup";
+import { hasApiKey, hasServerApiKey } from "@/lib/api-key";
 
 // ============================================================
 // Landing Page — UNDER PRESSURE title screen
 // ============================================================
 
 export default function Home() {
+  const [needsApiKey, setNeedsApiKey] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    async function checkApiKey() {
+      // Check if client has key in localStorage
+      if (hasApiKey()) {
+        setIsChecking(false);
+        return;
+      }
+
+      // Check if server has key
+      const serverHasKey = await hasServerApiKey();
+      setNeedsApiKey(!serverHasKey);
+      setIsChecking(false);
+    }
+
+    checkApiKey();
+  }, []);
+
+  const handleApiKeyComplete = () => {
+    setNeedsApiKey(false);
+  };
+
+  if (isChecking) {
+    return null; // Or a loading screen
+  }
+
   return (
-    <div
-      className="relative w-screen h-screen flex flex-col items-center justify-center overflow-hidden"
-      style={{
-        background: "radial-gradient(ellipse at center, #0a0f0a 0%, #000 100%)",
-      }}
-    >
+    <>
+      {needsApiKey && <ApiKeySetup onComplete={handleApiKeyComplete} />}
+      <div
+        className="relative w-screen h-screen flex flex-col items-center justify-center overflow-hidden"
+        style={{
+          background: "radial-gradient(ellipse at center, #0a0f0a 0%, #000 100%)",
+        }}
+      >
       {/* Animated noise background */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -75,7 +110,7 @@ export default function Home() {
 
         {/* Title */}
         <h1
-          className="text-5xl md:text-7xl font-bold tracking-[0.1em] text-gray-100 mb-2"
+          className="text-5xl md:text-7xl font-bold tracking-widest text-gray-100 mb-2"
           style={{
             fontFamily: "'Courier New', monospace",
             textShadow:
@@ -125,6 +160,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
