@@ -103,8 +103,8 @@ export function parseReaction(response: string): string | null {
 
 // Patterns that catch both <!-- STATE:{...} --> and bare STATE:{...} variants
 const STATE_PATTERN = /(?:<!-+\s*|\u2190\u2014\s*)?STATE:\s*\{[^}]+\}(?:\s*-+>)?/g;
-const TRANSCRIPTION_PATTERN = /(?:<!-+\s*)?TRANSCRIPTION:\s*"[^"]*"(?:\s*-+>)?/g;
-const REACTION_PATTERN = /(?:<!-+\s*)?R:\w+(?:\s*-+>)?/g;
+const TRANSCRIPTION_PATTERN = /(?:<!-+\s*|\u2190\u2014\s*)?TRANSCRIPTION:\s*"[^"]*"(?:\s*-+>)?/g;
+const REACTION_PATTERN = /(?:<!-+\s*|\u2190\u2014\s*)?R:\w+(?:\s*-+>)?/g;
 
 /** Strip all metadata blocks from the response, leaving only JAX's dialogue */
 function stripMetadata(response: string): string {
