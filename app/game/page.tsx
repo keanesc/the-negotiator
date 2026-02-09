@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/lib/game/state";
-import { parseSuspectState, parseTranscription, parseReaction } from "@/lib/game/prompts";
+import { parseSuspectState, parseTranscription, parseReaction, stripMetadata } from "@/lib/game/prompts";
 import { AudioEngine } from "@/lib/audio/audio-engine";
 import { BiometricAnalyzer } from "@/lib/audio/biometrics";
 import { Calibrator } from "@/lib/audio/calibration";
@@ -193,7 +193,10 @@ export default function GamePage() {
     formData.append(
       "history",
       JSON.stringify(
-        conversation.map((e) => ({ role: e.role, text: e.text }))
+        conversation.map((e) => ({
+          role: e.role,
+          text: e.role === "suspect" ? stripMetadata(e.text) : e.text,
+        }))
       )
     );
 
@@ -254,11 +257,13 @@ export default function GamePage() {
           }
 
           // Update the last suspect entry with streamed text (strip all metadata)
-          // Patterns handle both <!-- ... --> comment-wrapped and bare variants
+          // Strip completed metadata blocks (supports [[]], <!-- -->, ←—, or bare keywords)
           const strippedText = fullResponse
-            .replace(/(?:<!-+\s*)?TRANSCRIPTION:\s*"[^"]*"(?:\s*-+>)?/g, "")
-            .replace(/(?:<!-+\s*)?R:\w+(?:\s*-+>)?/g, "")
-            .replace(/(?:<!-+\s*|\u2190\u2014\s*)?STATE:\s*\{[^}]+\}(?:\s*-+>)?/g, "")
+            .replace(/(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?TRANSCRIPTION:\s*"[^"]*"(?:\s*\]{2}|\s*-+>)?/g, "")
+            .replace(/(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?R:\w+(?:\s*\]{2}|\s*-+>)?/g, "")
+            .replace(/(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?STATE:\s*\{[^}]+\}(?:\s*\]{2}|\s*-+>)?/g, "")
+            // Strip incomplete metadata still being streamed
+            .replace(/(?:\[{2}|<!-+|\u2190\u2014)(?:(?!\]{2}|-->)[\s\S])*$/g, "")
             .trim();
           const reactionLine = parseReaction(fullResponse);
           const displayText = reactionLine ? `${reactionLine} ${strippedText}` : strippedText;

@@ -80,7 +80,7 @@ export async function POST(request: Request) {
         : google("gemini-3-flash-preview"),
       system: JAX_SYSTEM_PROMPT,
       messages,
-      maxOutputTokens: 500,
+      maxOutputTokens: 1024,
     });
 
     return result.toTextStreamResponse();

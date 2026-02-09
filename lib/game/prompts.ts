@@ -61,11 +61,11 @@ You are talking to a police negotiator via the bank's landline phone.
 
 # TRANSCRIPTION
 Transcribe the negotiator's audio into:
-<!-- TRANSCRIPTION: "exact words you heard" -->
+[[ TRANSCRIPTION: "exact words you heard" ]]
 Put this BEFORE your response. Do NOT repeat the transcription in your response.
 
 # REACTIONS
-When biometrics cross a threshold, include <!-- R:KEY --> before your response (after TRANSCRIPTION).
+When biometrics cross a threshold, include [[ R:KEY ]] before your response (after TRANSCRIPTION).
 Pick ONE key per trigger. Do NOT write the reaction dialog — it is resolved automatically.
 Still update STATE numbers with the listed effects.
 
@@ -80,34 +80,33 @@ Surrender(T≤15): sur1|sur2    Execute(T≥95): exe1|exe2
 ALL CAPS when yelling, ellipses for paranoia. Never break character.
 
 At the END of every response, append EXACTLY:
-<!-- STATE:{"tension":50,"paranoia":30,"respect":50,"hostages":3} -->
+[[ STATE:{"tension":50,"paranoia":30,"respect":50,"hostages":3} ]]
 Update numbers based on the conversation. T/P/R: 0-100, hostages: 0-3.
 
 # WIN/LOSE
-- Tension ≤ 15: Include <!-- R:sur1 --> or sur2, set tension=0.
-- Tension ≥ 95: Include <!-- R:exe1 --> or exe2, hostages-1, reset tension=70.
+- Tension ≤ 15: Include [[ R:sur1 ]] or sur2, set tension=0.
+- Tension ≥ 95: Include [[ R:exe1 ]] or exe2, hostages-1, reset tension=70.
 - Hostages = 0: Game over.`;
 
-/** Parse the TRANSCRIPTION: "..." block from Jax's response (with or without comment delimiters) */
+/** Parse the TRANSCRIPTION: "..." block from Jax's response */
 export function parseTranscription(response: string): string | null {
-  const match = response.match(/(?:<!-+\s*)?TRANSCRIPTION:\s*"([^"]*)"(?:\s*-+>)?/);
+  const match = response.match(/(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?TRANSCRIPTION:\s*"([^"]*)"(?:\s*\]{2}|\s*-+>)?/);
   return match ? match[1] : null;
 }
 
-/** Parse the R:KEY block and resolve it to a reaction line (with or without comment delimiters) */
+/** Parse the R:KEY block and resolve it to a reaction line */
 export function parseReaction(response: string): string | null {
-  const match = response.match(/(?:<!-+\s*)?R:(\w+)(?:\s*-+>)?/);
+  const match = response.match(/(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?R:(\w+)(?:\s*\]{2}|\s*-+>)?/);
   if (!match) return null;
   return REACTION_LINES[match[1]] ?? null;
 }
 
-// Patterns that catch both <!-- STATE:{...} --> and bare STATE:{...} variants
-const STATE_PATTERN = /(?:<!-+\s*|\u2190\u2014\s*)?STATE:\s*\{[^}]+\}(?:\s*-+>)?/g;
-const TRANSCRIPTION_PATTERN = /(?:<!-+\s*|\u2190\u2014\s*)?TRANSCRIPTION:\s*"[^"]*"(?:\s*-+>)?/g;
-const REACTION_PATTERN = /(?:<!-+\s*|\u2190\u2014\s*)?R:\w+(?:\s*-+>)?/g;
+const STATE_PATTERN = /(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?STATE:\s*\{[^}]+\}(?:\s*\]{2}|\s*-+>)?/g;
+const TRANSCRIPTION_PATTERN = /(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?TRANSCRIPTION:\s*"[^"]*"(?:\s*\]{2}|\s*-+>)?/g;
+const REACTION_PATTERN = /(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?R:\w+(?:\s*\]{2}|\s*-+>)?/g;
 
 /** Strip all metadata blocks from the response, leaving only JAX's dialogue */
-function stripMetadata(response: string): string {
+export function stripMetadata(response: string): string {
   return response
     .replace(TRANSCRIPTION_PATTERN, "")
     .replace(REACTION_PATTERN, "")
@@ -123,7 +122,7 @@ export function parseSuspectState(response: string): {
   respect: number;
   hostages: number;
 } | null {
-  const stateMatch = response.match(/(?:<!-+\s*|\u2190\u2014\s*)?STATE:\s*(\{[^}]+\})(?:\s*-+>)?/);
+  const stateMatch = response.match(/(?:\[{2}\s*|<!-+\s*|\u2190\u2014\s*)?STATE:\s*(\{[^}]+\})(?:\s*\]{2}|\s*-+>)?/);
   if (!stateMatch) return null;
 
   try {
