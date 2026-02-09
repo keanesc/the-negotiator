@@ -12,23 +12,26 @@ This game requires a Google Gemini API key. You have two options:
 
 1. Get your API key from [Google AI Studio](https://aistudio.google.com/apikey)
 2. Copy `.env.example` to `.env.local`:
+
    ```bash
    cp .env.example .env.local
    ```
+
 3. Add your API key to `.env.local`:
-   ```
+
+   ```Dotenv
    GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
    ```
 
-**Option B: Client-side setup (for deployed apps)**
+#### Option B: Client-side setup (for deployed apps)
 
 When you first launch the game, you'll be prompted to enter your API key. It will be stored securely in your browser.
 
 ### 2. Run the Development Server
 
 ```bash
-$ bun install
-$ bun dev
+bun install
+bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
